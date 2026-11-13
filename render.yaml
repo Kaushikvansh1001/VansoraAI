@@ -1,0 +1,32 @@
+# Render native Python runtime. This blueprint does not use Docker.
+# A separate worker service is intentionally omitted: Render background workers
+# are a paid service, and Phase 2 has no long-running document or workflow jobs yet.
+# Start the worker locally with: python -m app.workers
+
+services:
+  - type: web
+    name: vansoraai-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.8"
+      - key: APP_ENV
+        value: production
+      - key: AUTH_MODE
+        value: supabase
+      - key: EXPOSE_DEV_TOKENS
+        value: "false"
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_JWT_SECRET
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false

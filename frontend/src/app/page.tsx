@@ -6,12 +6,11 @@ const today = [
   "Create an organization and invite members",
   "Open a dashboard whose counts come from the database",
   "Review AI provider health and real usage",
+  "Draw a workflow and run it manually",
 ];
 
 const later = [
-  { title: "Knowledge assistant", text: "Upload documents, retrieve passages, and answer with citations." },
-  { title: "Data analyst", text: "Ask questions about a spreadsheet through a validated analysis plan." },
-  { title: "Workflows and support", text: "Draw an automation, require approval, and draft support replies." },
+  { title: "Support assistant", text: "Draft support replies after a person reviews them." },
 ];
 
 export default function HomePage() {
@@ -26,7 +25,7 @@ export default function HomePage() {
         <p className="mt-4 max-w-2xl text-muted">
           VansoraAI is being built in phases. Accounts, organizations, and dashboard counts are stored in
           Supabase, so the same workspace opens on either computer. Provider health and a test prompt are
-          available to organization admins. Document search and workflows come later.
+          available to organization admins. Knowledge, the data analyst, and manual workflows are in the workspace.
         </p>
         <div className="mt-8 flex gap-3">
           <Link href="/register" className="rounded-md bg-ink px-4 py-2 text-sm text-pearl">

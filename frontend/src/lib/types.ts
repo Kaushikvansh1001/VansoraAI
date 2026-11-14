@@ -178,3 +178,85 @@ export type TokenResponse = {
   token_type: string;
   user: User;
 };
+
+export type WorkflowNode = {
+  id: string;
+  node_type: string;
+  label: string;
+  position_x: number;
+  position_y: number;
+  config: Record<string, string | string[]>;
+};
+
+export type WorkflowEdge = {
+  id: string;
+  source_node_id: string;
+  target_node_id: string;
+  source_handle: string | null;
+  target_handle: string | null;
+};
+
+export type WorkflowDetail = {
+  id: string;
+  name: string;
+  description: string | null;
+  status: "draft" | "active" | "paused";
+  created_at: string;
+  updated_at: string;
+  nodes: WorkflowNode[];
+  edges: WorkflowEdge[];
+};
+
+export type WorkflowCard = {
+  id: string;
+  name: string;
+  description: string | null;
+  status: WorkflowDetail["status"];
+  updated_at: string;
+  node_count: number;
+};
+
+export type WorkflowStep = {
+  id: string;
+  node_id: string | null;
+  node_type: string | null;
+  node_label: string | null;
+  status: string;
+  input_json: Record<string, unknown> | null;
+  output_json: Record<string, unknown> | null;
+  error_message: string | null;
+  started_at: string | null;
+  finished_at: string | null;
+  duration_ms: number | null;
+};
+
+export type WorkflowExecution = {
+  id: string;
+  workflow_id: string;
+  workflow_name: string;
+  status: string;
+  trigger_type: string;
+  error_message: string | null;
+  started_at: string | null;
+  finished_at: string | null;
+  duration_ms: number | null;
+  created_at: string;
+  steps: WorkflowStep[];
+};
+
+export type WorkflowTemplate = {
+  id: string;
+  name: string;
+  description: string;
+};
+
+export type WorkflowSummary = {
+  total: number;
+  active: number;
+  draft: number;
+  paused: number;
+  successful_executions: number;
+  failed_executions: number;
+  recent_executions: WorkflowExecution[];
+  templates: WorkflowTemplate[];
+};

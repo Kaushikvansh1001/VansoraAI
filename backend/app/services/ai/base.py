@@ -20,6 +20,14 @@ def redact(text: str) -> str:
     return cleaned.replace("\n", " ")[:300]
 
 
+def scrub_text(text: str, limit: int = 8000) -> str:
+    """Remove provider keys and null bytes without flattening the workflow text."""
+    cleaned = text.replace("\x00", "")
+    for pattern in _SECRET_PATTERNS:
+        cleaned = pattern.sub("[redacted]", cleaned)
+    return cleaned[:limit]
+
+
 def failure_from_status(provider: str, status: int, body: str) -> ProviderError:
     message = redact(body) or f"HTTP {status}"
     if status in {401, 403}:

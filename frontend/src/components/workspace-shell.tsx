@@ -41,7 +41,7 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
         </Link>
         <nav className="flex flex-wrap gap-1 md:grid">
           {links.map((link) => {
-            const active = pathname === link.href;
+            const active = pathname === link.href || pathname.startsWith(`${link.href}/`);
             return (
               <Link
                 key={link.href}

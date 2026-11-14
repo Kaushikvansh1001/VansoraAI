@@ -57,7 +57,7 @@ cd backend
 .\.venv\Scripts\python -m app.workers
 ```
 
-Redis and Celery are not installed. Add them only when document processing or workflow execution needs a broker, and run that worker as its own service. A Render background worker is a paid service, so the blueprint does not create one yet.
+Workflow runs happen inside the manual request. Redis and Celery are not installed. A Render background worker is a paid service, so the blueprint does not create one.
 
 ## Shared development data
 

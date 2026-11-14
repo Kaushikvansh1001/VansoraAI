@@ -3,11 +3,13 @@ import uuid
 from fastapi import APIRouter, Depends, File, Header, UploadFile
 from sqlalchemy.orm import Session
 
+from app.core.config import get_settings
 from app.core.dependencies import get_current_user
 from app.core.errors import AppError
+from app.core.security import generation_rate_limiter, upload_rate_limiter
 from app.db.session import get_db
 from app.models.identity import Profile
-from app.schemas.knowledge import AnswerResponse, AskRequest, CitationResponse, DocumentResponse
+from app.schemas.knowledge import AnswerResponse, AskRequest, CitationResponse, DocumentResponse, KnowledgeModeResponse
 from app.services.knowledge.service import KnowledgeService
 from app.services.knowledge.text import MAX_BYTES
 from app.services.organizations import OrganizationService
@@ -45,15 +47,30 @@ def _document_response(document) -> DocumentResponse:
     )
 
 
+@router.get("/mode", response_model=KnowledgeModeResponse)
+def knowledge_mode(_context: tuple = Depends(_member)) -> KnowledgeModeResponse:
+    demo = get_settings().knowledge_mode == "demo"
+    if demo:
+        notice = (
+            "Demo mode. Questions search the prepared Northwind Studio sample by wording. "
+            "This is not semantic vector search. Uploads and full indexing stay on a local copy of the API."
+        )
+    else:
+        notice = "Upload a PDF or Word file, then ask a question. Answers use that file and name the source."
+    return KnowledgeModeResponse(mode="demo" if demo else "full", demo=demo, notice=notice)
+
+
 @router.get("/documents", response_model=list[DocumentResponse])
 def list_documents(context: tuple = Depends(_member)) -> list[DocumentResponse]:
-    organization_id, _user, db = context
-    return [_document_response(document) for document in KnowledgeService(db).list_documents(organization_id)]
+    organization_id, user, db = context
+    documents = KnowledgeService(db).list_documents(organization_id, user.id)
+    return [_document_response(document) for document in documents]
 
 
 @router.post("/documents", response_model=DocumentResponse)
 def upload_document(file: UploadFile = File(...), context: tuple = Depends(_member)) -> DocumentResponse:
     organization_id, user, db = context
+    upload_rate_limiter.check(str(user.id))
     content = file.file.read(MAX_BYTES + 1)
     document = KnowledgeService(db).upload(
         organization_id=organization_id,
@@ -67,6 +84,7 @@ def upload_document(file: UploadFile = File(...), context: tuple = Depends(_memb
 @router.post("/ask", response_model=AnswerResponse)
 def ask(body: AskRequest, context: tuple = Depends(_member)) -> AnswerResponse:
     organization_id, user, db = context
+    generation_rate_limiter.check(str(user.id))
     answer = KnowledgeService(db).ask(
         organization_id=organization_id,
         user_id=user.id,
@@ -86,4 +104,5 @@ def ask(body: AskRequest, context: tuple = Depends(_member)) -> AnswerResponse:
             )
             for item in answer.citations
         ],
+        retrieval=answer.retrieval,
     )

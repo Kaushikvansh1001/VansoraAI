@@ -5,6 +5,7 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy.exc import InterfaceError, OperationalError
 
 from app.api.v1.router import api_router
 from app.core.config import get_settings
@@ -59,6 +60,20 @@ async def validation_handler(request: Request, exc: RequestValidationError) -> J
         detail = first.get("msg", message)
         message = f"{' '.join(location)}: {detail}" if location else str(detail)
     return JSONResponse(status_code=422, content=_error_body(request, "validation_error", message))
+
+
+@app.exception_handler(OperationalError)
+@app.exception_handler(InterfaceError)
+async def database_unavailable(request: Request, exc: Exception) -> JSONResponse:
+    logger.warning("Database unavailable: %s", type(exc).__name__)
+    return JSONResponse(
+        status_code=503,
+        content=_error_body(
+            request,
+            "database_unavailable",
+            "The database is paused or unreachable. Open Supabase, resume the project, and try again.",
+        ),
+    )
 
 
 @app.exception_handler(Exception)

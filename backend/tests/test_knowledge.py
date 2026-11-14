@@ -6,6 +6,7 @@ import pytest
 from pypdf import PdfWriter
 
 from app.core.errors import AppError
+from app.services.ai.exceptions import EmbeddingError
 from app.models.enums import DocumentStatus
 from app.models.knowledge import Document, DocumentChunk
 from app.services.ai.embeddings import EmbeddingService
@@ -42,6 +43,9 @@ class MemoryStorage:
             raise AppError("storage_failed", "The file could not be stored.", 502)
         self.paths.append(object_path)
         return object_path
+
+    def delete(self, object_path: str) -> None:
+        self.paths = [path for path in self.paths if path != object_path]
 
 
 def embedder():
@@ -128,6 +132,22 @@ def test_storage_failure_keeps_a_failed_document():
     )
     assert document.status == DocumentStatus.failed
     assert document.error_message == "The file could not be stored."
+
+
+def test_index_failure_removes_the_stored_file():
+    class Broken:
+        def embed_texts(self, _texts):
+            raise EmbeddingError("down")
+
+    storage = MemoryStorage()
+    document = KnowledgeService(FakeDb(), storage=storage, embeddings=Broken()).upload(
+        organization_id=uuid.uuid4(),
+        user_id=uuid.uuid4(),
+        filename="notes.txt",
+        content=b"Refunds take 30 days.",
+    )
+    assert document.status == DocumentStatus.failed
+    assert storage.paths == []
 
 
 def test_answer_uses_the_retrieved_passage_and_cites_it():

@@ -30,3 +30,10 @@ class AnswerResponse(BaseModel):
     provider: str
     model: str
     citations: list[CitationResponse]
+    retrieval: str = "vector"
+
+
+class KnowledgeModeResponse(BaseModel):
+    mode: str
+    demo: bool
+    notice: str

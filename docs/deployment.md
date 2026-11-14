@@ -29,9 +29,9 @@ Set these on the Render service:
 | `SUPABASE_STORAGE_BUCKET` | `documents` |
 | `CORS_ORIGINS` | The Vercel origin |
 
-`APP_ENV=production` rejects a `DATABASE_URL` that points at localhost.
+`APP_ENV=production` rejects a localhost database, a localhost `CORS_ORIGINS` value, the development `SECRET_KEY`, and an Ollama server on this computer. `render.yaml` sets `AI_FALLBACK_PROVIDERS=groq` and leaves `OLLAMA_BASE_URL` empty. Render's health check is `GET /api/v1/health`.
 
-The free web service sleeps after 15 minutes without traffic and has 512 MB of RAM. It is a portfolio host, not an uptime guarantee.
+The free web service sleeps after 15 minutes without traffic and has 512 MB of RAM. `KNOWLEDGE_MODE=demo` keeps the embedding model out of that process. Render installs `requirements-hosted.txt`, which does not include FastEmbed. Visitors can ask about the prepared sample through Postgres text search. Uploads and semantic indexing stay on a computer running `KNOWLEDGE_MODE=full`. The first request after sleep can take about a minute. If Supabase has paused the project, resume it from the Supabase dashboard.
 
 ## Database — Supabase
 

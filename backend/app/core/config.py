@@ -32,8 +32,12 @@ class Settings(BaseSettings):
     ai_health_timeout_seconds: float = 5
     embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
     embedding_dimensions: int = 384
+    analyst_max_bytes: int = 5_000_000
+    analyst_max_rows: int = 20_000
+    analyst_max_columns: int = 40
+    knowledge_mode: str = "full"
 
-    @field_validator("app_env", "auth_mode")
+    @field_validator("app_env", "auth_mode", "knowledge_mode")
     @classmethod
     def lowercase(cls, value: str) -> str:
         return value.lower().strip()
@@ -53,6 +57,8 @@ class Settings(BaseSettings):
     def validate_runtime(self) -> None:
         if self.app_env not in {"development", "production", "test"}:
             raise ValueError("APP_ENV must be development, production, or test.")
+        if self.knowledge_mode not in {"full", "demo"}:
+            raise ValueError("KNOWLEDGE_MODE must be full or demo.")
         if self.auth_mode not in {"local", "supabase"}:
             raise ValueError("AUTH_MODE must be 'supabase' or, for the test suite only, 'local'.")
         if not self.database_url.strip():
@@ -76,6 +82,22 @@ class Settings(BaseSettings):
                 raise ValueError("EXPOSE_DEV_TOKENS must be false in production.")
             if self.secret_key == "local-dev-only-change-me":
                 raise ValueError("Set a unique SECRET_KEY before production.")
+            if any(_is_local(origin) for origin in self.cors_origin_list):
+                raise ValueError("CORS_ORIGINS must be the deployed site, not localhost.")
+            chain = [self.ai_primary_provider.strip().lower(), *self.fallback_provider_list]
+            if "ollama" in chain and (not self.ollama_base_url.strip() or _is_local(self.ollama_base_url)):
+                raise ValueError(
+                    "Production cannot use Ollama on this computer. Remove ollama from AI_FALLBACK_PROVIDERS."
+                )
+            if self.knowledge_mode != "demo":
+                raise ValueError(
+                    "Set KNOWLEDGE_MODE=demo in production so the hosted API does not load the embedding model."
+                )
+
+
+def _is_local(value: str) -> bool:
+    lowered = value.lower()
+    return "localhost" in lowered or "127.0.0.1" in lowered
 
 
 @lru_cache

@@ -1,5 +1,6 @@
 import uuid
 from pathlib import PurePath
+from urllib.parse import quote
 
 import httpx
 
@@ -20,10 +21,8 @@ class SupabaseStorage:
 
     def upload(self, object_path: str, content: bytes, content_type: str) -> str:
         settings = get_settings()
-        bucket = settings.supabase_storage_bucket
-        url = f"{settings.supabase_url.rstrip('/')}/storage/v1/object/{bucket}/{object_path}"
         response = httpx.post(
-            url,
+            self._object_url(object_path),
             content=content,
             headers={
                 "Authorization": f"Bearer {settings.supabase_service_role_key}",
@@ -40,7 +39,8 @@ class SupabaseStorage:
     def signed_url(self, object_path: str, expires_in: int = 120) -> str:
         settings = get_settings()
         bucket = settings.supabase_storage_bucket
-        url = f"{settings.supabase_url.rstrip('/')}/storage/v1/object/sign/{bucket}/{object_path}"
+        quoted = quote(object_path, safe="/")
+        url = f"{settings.supabase_url.rstrip('/')}/storage/v1/object/sign/{bucket}/{quoted}"
         response = httpx.post(
             url,
             json={"expiresIn": expires_in},
@@ -58,3 +58,27 @@ class SupabaseStorage:
         if signed.startswith("http"):
             return signed
         return f"{settings.supabase_url.rstrip('/')}/storage/v1{signed}"
+
+    def download(self, object_path: str) -> bytes:
+        response = httpx.get(self._object_url(object_path), headers=self._auth_headers(), timeout=60)
+        if response.status_code >= 400:
+            raise AppError("storage_failed", "The file could not be read.", 502)
+        return response.content
+
+    def delete(self, object_path: str) -> None:
+        response = httpx.delete(self._object_url(object_path), headers=self._auth_headers(), timeout=30)
+        if response.status_code not in {200, 204, 404}:
+            raise AppError("storage_failed", "The file could not be removed.", 502)
+
+    def _object_url(self, object_path: str) -> str:
+        settings = get_settings()
+        quoted = quote(object_path, safe="/")
+        bucket = settings.supabase_storage_bucket
+        return f"{settings.supabase_url.rstrip('/')}/storage/v1/object/{bucket}/{quoted}"
+
+    def _auth_headers(self) -> dict[str, str]:
+        settings = get_settings()
+        return {
+            "Authorization": f"Bearer {settings.supabase_service_role_key}",
+            "apikey": settings.supabase_service_role_key,
+        }

@@ -5,7 +5,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { buttonClass, fieldClass } from "@/components/auth-card";
 import { ApiError, api } from "@/lib/api";
 import { useSession } from "@/lib/session";
-import type { KnowledgeAnswer, KnowledgeDocument } from "@/lib/types";
+import type { KnowledgeAnswer, KnowledgeDocument, KnowledgeMode } from "@/lib/types";
 
 export default function KnowledgePage() {
   const { organization, organizationId } = useSession();
@@ -17,6 +17,8 @@ export default function KnowledgePage() {
   const [fileKey, setFileKey] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [asking, setAsking] = useState(false);
+  const [demo, setDemo] = useState(false);
+  const [notice, setNotice] = useState("Upload a PDF or Word file, then ask a question. Answers use that file and name the source.");
 
   function load(orgId: string) {
     return api<KnowledgeDocument[]>("/knowledge/documents", { orgId }).then(setDocuments);
@@ -28,6 +30,16 @@ export default function KnowledgePage() {
       return;
     }
     let active = true;
+    api<KnowledgeMode>("/knowledge/mode", { orgId: organizationId })
+      .then((mode) => {
+        if (!active) return;
+        setDemo(mode.demo);
+        setNotice(mode.notice);
+      })
+      .catch((caught) => {
+        if (!active) return;
+        setError(caught instanceof ApiError ? caught.message : "Could not load documents.");
+      });
     load(organizationId).catch((caught) => {
       if (!active) return;
       setError(caught instanceof ApiError ? caught.message : "Could not load documents.");
@@ -70,7 +82,7 @@ export default function KnowledgePage() {
   async function onAsk(event: FormEvent) {
     event.preventDefault();
     if (!organizationId) return;
-    if (!ready) {
+    if (!demo && !ready) {
       setError("Upload a document and wait until it says ready.");
       return;
     }
@@ -111,13 +123,14 @@ export default function KnowledgePage() {
 
   return (
     <section className="max-w-3xl">
-      <h1 className="text-2xl font-semibold">Knowledge</h1>
-      <p className="mt-2 text-sm text-muted">
-        Upload a PDF or Word file, then ask a question. Answers use that file and name the source.
-      </p>
+      <div className="flex items-baseline justify-between gap-3">
+        <h1 className="text-2xl font-semibold">Knowledge</h1>
+        {demo ? <span className="rounded-md border border-line px-2 py-1 text-xs font-medium tracking-wide text-muted">Demo mode</span> : null}
+      </div>
+      <p className="mt-2 text-sm text-muted">{notice}</p>
       {error ? <p className="mt-4 text-sm text-red-700">{error}</p> : null}
 
-      <form className="surface-card mt-6 rounded-lg border border-line p-4" onSubmit={onUpload}>
+      {demo ? null : <form className="surface-card mt-6 rounded-lg border border-line p-4" onSubmit={onUpload}>
         <h2 className="text-sm font-medium">Upload a document</h2>
         <p className="mt-1 text-sm text-muted">PDF, Word (.docx), .txt, .md, or .csv. Maximum 2 MB.</p>
         <input
@@ -130,7 +143,7 @@ export default function KnowledgePage() {
         <button className={`${buttonClass} mt-3`} disabled={uploading} type="submit">
           {uploading ? "Reading…" : "Upload"}
         </button>
-      </form>
+      </form>}
 
       <div className="mt-4 grid gap-3">
         {documents.length === 0 ? <p className="text-sm text-muted">No documents yet.</p> : null}
@@ -151,7 +164,7 @@ export default function KnowledgePage() {
           className={`${fieldClass} mt-3 min-h-24`}
           value={question}
           maxLength={1000}
-          placeholder="What does the file say about refunds?"
+          placeholder={demo ? "What was Northwind Studio's revenue?" : "What does the file say about refunds?"}
           onChange={(event) => setQuestion(event.target.value)}
         />
         <button className={`${buttonClass} mt-3`} disabled={asking} type="submit">
@@ -164,7 +177,11 @@ export default function KnowledgePage() {
               <div className="mt-2 text-lg leading-relaxed text-ink">
                 <AnswerText text={answer.answer} />
               </div>
-              <p className="mt-4 text-sm text-muted">From {sourceNames(answer.citations)}</p>
+              <p className="mt-4 text-sm text-muted">
+                {answer.retrieval === "text"
+                  ? `Matched by text search in ${sourceNames(answer.citations)}. This is not a semantic vector search.`
+                  : `From ${sourceNames(answer.citations)}`}
+              </p>
             </article>
             <details className="mt-3">
               <summary className="cursor-pointer text-sm text-muted">Passages used</summary>

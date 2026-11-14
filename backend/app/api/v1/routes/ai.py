@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_current_user
 from app.core.errors import AppError
+from app.core.security import generation_rate_limiter
 from app.db.session import get_db
 from app.models.identity import Profile
 from app.schemas.ai import (
@@ -65,4 +66,5 @@ def fallbacks(context: tuple = Depends(_admin)) -> list[FallbackEventResponse]:
 @router.post("/test", response_model=TestGenerationResponse)
 def test_generation(body: TestGenerationRequest, context: tuple = Depends(_admin)) -> TestGenerationResponse:
     organization_id, user, db = context
+    generation_rate_limiter.check(str(user.id))
     return AiAdminService(db).test_generation(organization_id, user.id, body.prompt)

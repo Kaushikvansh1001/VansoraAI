@@ -39,6 +39,7 @@ export default function SettingsPage() {
   async function createOrganization(event: FormEvent) {
     event.preventDefault();
     setError(null);
+    setMessage(null);
     try {
       const created = await api<Organization>("/organizations", {
         method: "POST",
@@ -57,6 +58,7 @@ export default function SettingsPage() {
     event.preventDefault();
     if (!organizationId) return;
     setError(null);
+    setMessage(null);
     try {
       await api(`/organizations/${organizationId}`, {
         method: "PATCH",
@@ -73,6 +75,7 @@ export default function SettingsPage() {
     event.preventDefault();
     if (!organizationId) return;
     setError(null);
+    setMessage(null);
     try {
       await api(`/organizations/${organizationId}/members`, {
         method: "POST",

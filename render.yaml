@@ -9,7 +9,8 @@ services:
     runtime: python
     plan: free
     rootDir: backend
-    buildCommand: pip install -r requirements.txt
+    healthCheckPath: /api/v1/health
+    buildCommand: pip install -r requirements-hosted.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
@@ -46,3 +47,7 @@ services:
         value: gemini-flash-lite-latest
       - key: GROQ_MODEL
         value: openai/gpt-oss-20b
+      - key: OLLAMA_BASE_URL
+        value: ""
+      - key: KNOWLEDGE_MODE
+        value: demo

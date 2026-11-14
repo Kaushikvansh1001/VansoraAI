@@ -113,11 +113,64 @@ export type KnowledgeCitation = {
   excerpt: string;
 };
 
+export type KnowledgeMode = {
+  mode: "full" | "demo";
+  demo: boolean;
+  notice: string;
+};
+
 export type KnowledgeAnswer = {
   answer: string;
   provider: string;
   model: string;
+  retrieval: "vector" | "text";
   citations: KnowledgeCitation[];
+};
+
+export type DatasetColumn = {
+  name: string;
+  type: string;
+  missing: number;
+  unique: number;
+  numeric: { count: number; min: number; max: number; mean: number; sum: number } | null;
+  date_min: string | null;
+  date_max: string | null;
+};
+
+export type DatasetProfile = {
+  columns: DatasetColumn[];
+  duplicate_rows: number;
+  preview: Record<string, string | number | boolean | null>[];
+};
+
+export type AnalystDataset = {
+  id: string;
+  name: string;
+  status: "pending" | "processing" | "ready" | "failed";
+  row_count: number;
+  column_count: number;
+  error_message: string | null;
+  profile: DatasetProfile;
+  created_at: string;
+};
+
+export type AnalystChart = {
+  type: "bar" | "line" | "pie" | "area" | "table" | "kpi";
+  data: { label: string; value: number }[];
+};
+
+export type AnalystResult = {
+  id: string;
+  dataset_id: string;
+  question: string;
+  status: "pending" | "running" | "succeeded" | "failed";
+  error_message: string | null;
+  calculated: { value: number | null; rows: { label: string; value: number }[]; chart: string } | null;
+  facts: string[];
+  interpretation: string | null;
+  insights: string[];
+  chart: AnalystChart | null;
+  created_at: string;
 };
 
 export type TokenResponse = {

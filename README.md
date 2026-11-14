@@ -2,7 +2,7 @@
 
 Intelligence. Automation. Evolution.
 
-VansoraAI is a multi-tenant business intelligence platform. The foundation is Supabase Auth, organizations, and a dashboard whose numbers come from the shared Supabase database. Knowledge accepts a text or PDF upload and answers questions from that file. The data analyst and workflows come later.
+VansoraAI is a multi-tenant business intelligence platform. The foundation is Supabase Auth, organizations, and a dashboard whose numbers come from the shared Supabase database. Knowledge answers questions from an uploaded text, PDF, or Word file. Data analyst profiles a CSV or Excel file, calculates the answer from that file, and charts the result. Workflows and support come later.
 
 Both computers use one Supabase project. Setup steps for a new laptop are in [DEVELOPMENT.md](DEVELOPMENT.md) and [docs/development.md](docs/development.md). Deployment is in [docs/deployment.md](docs/deployment.md).
 

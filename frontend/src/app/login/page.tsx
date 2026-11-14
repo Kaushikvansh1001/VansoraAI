@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { AuthCard, buttonClass, fieldClass } from "@/components/auth-card";
-import { getSupabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
+import { getSupabase, setAccessToken } from "@/lib/supabase";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -18,11 +19,13 @@ export default function LoginPage() {
     setPending(true);
     setError(null);
     try {
-      const { error: signInError } = await getSupabase().auth.signInWithPassword({ email, password });
-      if (signInError) {
-        setError(signInError.message);
+      const { data, error: signInError } = await getSupabase().auth.signInWithPassword({ email, password });
+      if (signInError || !data.session) {
+        setError(signInError?.message ?? "Could not sign in.");
         return;
       }
+      setAccessToken(data.session.access_token);
+      await api("/auth/me", { token: data.session.access_token });
       router.push("/dashboard");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not sign in.");

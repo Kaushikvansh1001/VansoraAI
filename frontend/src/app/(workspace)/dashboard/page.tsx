@@ -44,7 +44,7 @@ export default function DashboardPage() {
       <section className="max-w-lg">
         <h1 className="text-2xl font-semibold">Dashboard</h1>
         <p className="mt-2 text-muted">Create an organization before the counts have a tenant to read.</p>
-        <Link href="/settings" className="mt-4 inline-block text-sm text-brand">
+        <Link href="/settings" className="mt-4 inline-block text-sm font-medium text-ink">
           Create an organization
         </Link>
       </section>
@@ -61,29 +61,29 @@ export default function DashboardPage() {
         <>
           <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {stats.map((stat) => (
-              <article key={stat.key} className="rounded-lg border border-line bg-surface p-4">
+              <article key={stat.key} className="surface-card rounded-lg border border-line p-4">
                 <p className="text-sm text-muted">{stat.label}</p>
                 <p className="mt-2 text-2xl font-semibold">{data[stat.key] as number}</p>
               </article>
             ))}
-            <article className="rounded-lg border border-line bg-surface p-4">
+            <article className="surface-card rounded-lg border border-line p-4">
               <p className="text-sm text-muted">Estimated cost (USD)</p>
               <p className="mt-2 text-2xl font-semibold">{data.estimated_cost_usd}</p>
             </article>
           </div>
           <div className="mt-6 grid gap-4 lg:grid-cols-2">
-            <article className="rounded-lg border border-line bg-surface p-4">
+            <article className="surface-card rounded-lg border border-line p-4">
               <h2 className="font-medium">Document status</h2>
               <ul className="mt-3 grid grid-cols-2 gap-2 text-sm">
                 {Object.entries(data.document_status).map(([status, count]) => (
-                  <li key={status} className="flex justify-between rounded-md border border-line px-3 py-2">
+                  <li key={status} className="flex justify-between rounded-md border border-line bg-secondary px-3 py-2">
                     <span className="capitalize">{status}</span>
                     <span>{count}</span>
                   </li>
                 ))}
               </ul>
             </article>
-            <article className="rounded-lg border border-line bg-surface p-4">
+            <article className="surface-card rounded-lg border border-line p-4">
               <h2 className="font-medium">Recent activity</h2>
               {data.recent_activity.length === 0 ? (
                 <p className="mt-3 text-sm text-muted">No activity yet.</p>
@@ -99,7 +99,7 @@ export default function DashboardPage() {
               )}
             </article>
           </div>
-          <article className="mt-4 rounded-lg border border-line bg-surface p-4">
+          <article className="surface-card mt-4 rounded-lg border border-line p-4">
             <h2 className="font-medium">Recent conversations</h2>
             {data.recent_conversations.length === 0 ? (
               <p className="mt-3 text-sm text-muted">No conversations yet. The knowledge assistant arrives in a later phase.</p>

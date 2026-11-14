@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { api } from "@/lib/api";
-import { getSupabase } from "@/lib/supabase";
+import { getSupabase, setAccessToken } from "@/lib/supabase";
 import type { Organization, User } from "@/lib/types";
 
 const ORG_KEY = "vansora.orgId";
@@ -50,6 +50,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     }
 
     const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
+      setAccessToken(session?.access_token ?? null);
       if (!session) {
         setUser(null);
         setOrganizations([]);
@@ -57,7 +58,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         setReady(true);
         return;
       }
-      api<User>("/auth/me")
+      api<User>("/auth/me", { token: session.access_token })
         .then(async (me) => {
           setUser(me);
           await refreshOrganizations();
@@ -82,6 +83,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // The browser session is cleared even if Supabase is unreachable.
     }
+    setAccessToken(null);
     window.localStorage.removeItem(ORG_KEY);
     setUser(null);
     setOrganizations([]);

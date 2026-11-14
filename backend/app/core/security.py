@@ -1,9 +1,11 @@
 import hashlib
+import logging
 import time
 import uuid
 from datetime import datetime, timedelta, timezone
 
 import bcrypt
+import httpx
 import jwt
 from jwt import PyJWKClient
 
@@ -12,6 +14,7 @@ from app.core.errors import AppError
 
 _DUMMY_PASSWORD_HASH = bcrypt.hashpw(b"not-the-password", bcrypt.gensalt())
 _jwks_client: PyJWKClient | None = None
+logger = logging.getLogger("vansoraai")
 
 
 class WindowLimiter:
@@ -80,19 +83,49 @@ def _decode_supabase_token(token: str) -> dict:
     if not settings.supabase_url and not settings.supabase_jwt_secret:
         raise AppError("auth_not_configured", "Supabase Auth is not configured on the server.", 500)
 
-    if settings.supabase_jwt_secret:
-        claims = jwt.decode(
-            token,
-            settings.supabase_jwt_secret,
-            algorithms=["HS256"],
-            audience="authenticated",
-        )
-    else:
-        claims = _decode_with_jwks(token)
+    try:
+        if settings.supabase_jwt_secret:
+            claims = jwt.decode(
+                token,
+                settings.supabase_jwt_secret,
+                algorithms=["HS256"],
+                audience="authenticated",
+            )
+        else:
+            claims = _decode_with_jwks(token)
+    except jwt.PyJWTError as exc:
+        logger.warning("Local Supabase JWT check failed: %s", exc)
+        claims = _claims_from_supabase_user(token)
 
     if not claims.get("sub"):
         raise AppError("invalid_token", "Sign in again to continue.", 401)
+    if not claims.get("email"):
+        user = _supabase_user(token)
+        claims = {**claims, "email": user.get("email"), "user_metadata": user.get("user_metadata") or {}}
     return claims
+
+
+def _claims_from_supabase_user(token: str) -> dict:
+    user = _supabase_user(token)
+    return {"sub": user.get("id"), "email": user.get("email"), "user_metadata": user.get("user_metadata") or {}}
+
+
+def _supabase_user(token: str) -> dict:
+    settings = get_settings()
+    response = httpx.get(
+        f"{settings.supabase_url.rstrip('/')}/auth/v1/user",
+        headers={
+            "Authorization": f"Bearer {token}",
+            "apikey": settings.supabase_service_role_key,
+        },
+        timeout=20,
+    )
+    if response.status_code != 200:
+        raise AppError("invalid_token", "Sign in again to continue.", 401)
+    user = response.json()
+    if not isinstance(user, dict) or not user.get("id") or not user.get("email"):
+        raise AppError("invalid_token", "Sign in again to continue.", 401)
+    return user
 
 
 def _decode_with_jwks(token: str) -> dict:

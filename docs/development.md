@@ -55,7 +55,7 @@ Frontend:
 
 ```powershell
 cd frontend
-copy .env.example .env.local
+copy .env.local.example .env.local
 npm install
 ```
 
@@ -124,7 +124,7 @@ cd frontend
 npm test
 ```
 
-Backend tests are skipped until `TEST_DATABASE_URL` points at a **second** Supabase project used only for pytest. They migrate that database and then truncate it. The test run stops if that URL is the same host and database name as `DATABASE_URL` in `backend/.env`, and it stops if the URL points at localhost.
+Provider tests run without a database. The older organization tests stay skipped until `TEST_DATABASE_URL` points at a **second** Supabase project used only for pytest. Those tests migrate that database and then truncate it. The test run stops if that URL is the same host and database name as `DATABASE_URL` in `backend/.env`, and it stops if the URL points at localhost.
 
 ```powershell
 cd backend
@@ -145,6 +145,28 @@ git push
 ```
 
 Before you add files, confirm `git status` does not list `backend/.env`, `frontend/.env.local`, or any file with a service role key, database password, or anon key. Those names are gitignored. If a secret was ever committed, rotate it in the Supabase dashboard.
+
+Copy the AI keys from `backend/.env.example` into `backend/.env` on each computer. Leave a key blank until you have it. See [ai.md](ai.md).
+
+Restart Uvicorn after you change `backend/.env`. The running API keeps the previous values until the process starts again. A file save is not enough.
+
+## Versions
+
+- Node.js 20 or newer
+- Python 3.12 or newer for local development. Render pins Python 3.12.8 in `render.yaml`.
+
+Ollama is optional and runs only on the computer where you install it. Set `OLLAMA_BASE_URL` empty on Render so the deployed API does not wait on `localhost`.
+
+## Troubleshooting
+
+- **Groq or Gemini still says not configured after you paste a key.** Save `backend/.env`, stop Uvicorn with `Ctrl+C`, and start it again. Then refresh AI providers.
+- **Ollama says unavailable.** Install Ollama, leave its app open, and download the model named in `OLLAMA_MODEL` (`llama3.2`). The first download is about 2 GB.
+- **Upload says choose a file first.** Click **Choose file**, pick a PDF, Word, text, Markdown, or CSV file, then click **Upload**.
+- **Knowledge upload sits on Reading.** The first upload loads the local embedding model. Later uploads are faster.
+- **Sign-in returns to the login page.** Confirm `frontend/.env.local` has the project URL and anon key, then hard-refresh the browser.
+- **The API cannot resolve the Supabase host.** That is a network or DNS failure to the pooler, not a bad migration. Retry when the connection returns. Do not create a new database.
+- **`alembic upgrade head` says the database is already at head.** Stop. The shared project already has the schema.
+- **A second computer has no `.env` files.** Copy the example files and fill the same Supabase values. Do not copy `node_modules` or `.venv` between computers.
 
 ## Production configuration
 

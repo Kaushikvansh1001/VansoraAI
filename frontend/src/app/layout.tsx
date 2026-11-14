@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { PearlCanvas } from "@/components/pearl-canvas";
 import { SessionProvider } from "@/lib/session";
 import "./globals.css";
 
@@ -28,7 +29,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className={`${inter.variable} antialiased`}>
-        <SessionProvider>{children}</SessionProvider>
+        <SessionProvider>
+          <PearlCanvas>{children}</PearlCanvas>
+        </SessionProvider>
       </body>
     </html>
   );

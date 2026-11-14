@@ -127,7 +127,7 @@ export default function SettingsPage() {
       {organization ? (
         <div className="mt-8">
           <h2 className="font-medium">Members</h2>
-          <ul className="mt-3 divide-y divide-line rounded-lg border border-line bg-surface">
+          <ul className="surface-card mt-3 divide-y divide-line rounded-lg border border-line">
             {members.map((member) => (
               <li key={member.id} className="flex items-center justify-between px-3 py-2 text-sm">
                 <span>

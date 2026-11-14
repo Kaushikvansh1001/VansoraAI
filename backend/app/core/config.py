@@ -20,6 +20,18 @@ class Settings(BaseSettings):
     supabase_jwt_secret: str = ""
     supabase_service_role_key: str = ""
     supabase_storage_bucket: str = "documents"
+    gemini_api_key: str = ""
+    groq_api_key: str = ""
+    ai_primary_provider: str = "gemini"
+    ai_fallback_providers: str = "groq,ollama"
+    ollama_base_url: str = "http://localhost:11434"
+    gemini_model: str = "gemini-flash-lite-latest"
+    groq_model: str = "openai/gpt-oss-20b"
+    ollama_model: str = "llama3.2"
+    ai_request_timeout_seconds: float = 30
+    ai_health_timeout_seconds: float = 5
+    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    embedding_dimensions: int = 384
 
     @field_validator("app_env", "auth_mode")
     @classmethod
@@ -33,6 +45,10 @@ class Settings(BaseSettings):
     @property
     def dev_tokens_enabled(self) -> bool:
         return self.expose_dev_tokens and self.app_env == "test"
+
+    @property
+    def fallback_provider_list(self) -> list[str]:
+        return [name.strip().lower() for name in self.ai_fallback_providers.split(",") if name.strip()]
 
     def validate_runtime(self) -> None:
         if self.app_env not in {"development", "production", "test"}:

@@ -162,6 +162,9 @@ class OrganizationService:
     def require_context(self, user: Profile, organization_id: uuid.UUID) -> tuple[Organization, OrganizationMember]:
         return self._require_membership(user, organization_id)
 
+    def require_admin(self, user: Profile, organization_id: uuid.UUID) -> tuple[Organization, OrganizationMember]:
+        return self._require_role(user, organization_id, MemberRole.org_admin)
+
     def _require_membership(self, user: Profile, organization_id: uuid.UUID) -> tuple[Organization, OrganizationMember]:
         organization = self.organizations.get(organization_id)
         member = self.organizations.get_member(organization_id, user.id)

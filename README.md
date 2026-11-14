@@ -2,9 +2,9 @@
 
 Intelligence. Automation. Evolution.
 
-VansoraAI is a multi-tenant business intelligence platform. Phase 2 is the foundation: Supabase Auth, organizations, and a dashboard whose numbers come from the shared Supabase database. Knowledge search, the data analyst, workflows, and live model calls come later.
+VansoraAI is a multi-tenant business intelligence platform. The foundation is Supabase Auth, organizations, and a dashboard whose numbers come from the shared Supabase database. Knowledge accepts a text or PDF upload and answers questions from that file. The data analyst and workflows come later.
 
-Both computers use one Supabase project. Setup steps for a new laptop are in [docs/development.md](docs/development.md). Deployment is in [docs/deployment.md](docs/deployment.md).
+Both computers use one Supabase project. Setup steps for a new laptop are in [DEVELOPMENT.md](DEVELOPMENT.md) and [docs/development.md](docs/development.md). Deployment is in [docs/deployment.md](docs/deployment.md).
 
 ## Run
 
@@ -30,4 +30,6 @@ backend/      FastAPI, deployed on Render's Python runtime
 docs/         Development and deployment notes
 ```
 
-The browser talks to Supabase Auth directly. Every organization record goes through the API with the Supabase access token. Files will be stored in the private `documents` bucket, not on the laptop.
+The browser talks to Supabase Auth directly. Every organization record goes through the API with the Supabase access token. Uploaded files are stored in the private `documents` bucket, not on the laptop.
+
+Organization admins can open **AI providers** to see whether Gemini, Groq, and Ollama are configured, then send a test prompt. Usage totals come from `ai_usage_logs`. Provider setup is described in [docs/ai.md](docs/ai.md).

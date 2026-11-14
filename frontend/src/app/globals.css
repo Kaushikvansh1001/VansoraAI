@@ -3,37 +3,110 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --bg: #f8fafc;
+  --pearl: #f5f4f0;
+  --ivory: #f7f6f2;
+  --warm: #efeee9;
+  --silver: #e5e5e2;
   --surface: #ffffff;
-  --ink: #1e293b;
-  --muted: #64748b;
-  --line: #e2e8f0;
-  --navy: #111827;
-  --brand: #6366f1;
+  --secondary: #e8e7e2;
+  --ink: #1c1c1a;
+  --muted: #5e5e59;
+  --line: #dddcd6;
+  --steel: #4e6574;
+  --steel-wash: rgba(78, 101, 116, 0.12);
+  --shadow: 0 1px 1px rgba(40, 38, 32, 0.04), 0 10px 28px rgba(40, 38, 32, 0.045);
+  --bg: var(--pearl);
+  --navy: #2c2c2a;
+  --brand: var(--steel);
 }
 
 .dark {
-  --bg: #0b1020;
-  --surface: #111827;
-  --ink: #e2e8f0;
-  --muted: #94a3b8;
-  --line: #1f2937;
-  --navy: #0f172a;
+  --pearl: #1c1d1b;
+  --ivory: #242523;
+  --warm: #191a18;
+  --silver: #3a3b37;
+  --surface: #262724;
+  --secondary: #2e2f2c;
+  --ink: #f3f2ee;
+  --muted: #a5a49e;
+  --line: #3a3b37;
+  --steel: #9aafbc;
+  --steel-wash: rgba(154, 175, 188, 0.16);
+  --shadow: 0 1px 1px rgba(0, 0, 0, 0.2), 0 10px 28px rgba(0, 0, 0, 0.18);
+  --bg: var(--pearl);
+  --navy: #f3f2ee;
+  --brand: var(--steel);
 }
 
 @theme inline {
   --color-canvas: var(--bg);
+  --color-pearl: var(--pearl);
+  --color-ivory: var(--ivory);
+  --color-warm: var(--warm);
   --color-surface: var(--surface);
+  --color-secondary: var(--secondary);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-navy: var(--navy);
   --color-brand: var(--brand);
+  --color-steel: var(--steel);
   --font-sans: var(--font-inter);
 }
 
 body {
-  background: var(--bg);
+  background: var(--pearl);
   color: var(--ink);
   font-family: var(--font-inter), Inter, sans-serif;
+}
+
+.pearl-canvas {
+  min-height: 100vh;
+  background-color: var(--pearl);
+  background-image:
+    radial-gradient(1100px 640px at 6% -8%, rgba(255, 255, 255, 0.72), transparent 58%),
+    radial-gradient(820px 520px at 108% 0%, rgba(229, 229, 226, 0.95), transparent 52%),
+    linear-gradient(158deg, var(--ivory) 0%, var(--pearl) 46%, var(--warm) 100%);
+}
+
+.dark .pearl-canvas {
+  background-image:
+    radial-gradient(900px 520px at 8% -10%, rgba(255, 255, 255, 0.04), transparent 55%),
+    radial-gradient(700px 480px at 100% 0%, rgba(0, 0, 0, 0.28), transparent 50%),
+    linear-gradient(158deg, #222320 0%, var(--pearl) 48%, #171816 100%);
+}
+
+.pearl-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.13;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size: 180px 180px;
+}
+
+.dark .pearl-grain {
+  opacity: 0.18;
+  mix-blend-mode: overlay;
+}
+
+.surface-card,
+.rounded-lg.border.bg-surface {
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+input,
+textarea,
+select {
+  color: var(--ink);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid var(--steel-wash);
+  outline-offset: 1px;
 }

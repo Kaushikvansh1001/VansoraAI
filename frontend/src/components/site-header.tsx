@@ -9,7 +9,7 @@ export function SiteHeader() {
   const { user } = useSession();
 
   return (
-    <header className="flex items-center justify-between border-b border-line px-6 py-4">
+    <header className="flex items-center justify-between border-b border-line bg-ivory/75 px-6 py-4">
       <Link href="/" className="flex items-center gap-3">
         <Logo />
         <span className="text-lg font-semibold">VansoraAI</span>
@@ -17,7 +17,7 @@ export function SiteHeader() {
       <div className="flex items-center gap-3">
         <ThemeToggle />
         {user ? (
-          <Link href="/dashboard" className="rounded-md bg-brand px-3 py-1.5 text-sm text-white">
+          <Link href="/dashboard" className="rounded-md bg-ink px-3 py-1.5 text-sm text-pearl">
             Workspace
           </Link>
         ) : (
@@ -25,7 +25,7 @@ export function SiteHeader() {
             <Link href="/login" className="text-sm">
               Sign in
             </Link>
-            <Link href="/register" className="rounded-md bg-brand px-3 py-1.5 text-sm text-white">
+            <Link href="/register" className="rounded-md bg-ink px-3 py-1.5 text-sm text-pearl">
               Create account
             </Link>
           </>

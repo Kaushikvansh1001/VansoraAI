@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
+import { buttonClass } from "@/components/auth-card";
 import { ApiError, api } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import type { AiFallback, AiProviders, AiTestResult, AiUsage } from "@/lib/types";
@@ -139,15 +140,15 @@ export default function UsagePage() {
         )}
       </section>
 
-      <form className="mt-8 grid gap-3" onSubmit={onTest}>
+      <form className="surface-card mt-6 grid gap-3 rounded-lg border border-line p-4" onSubmit={onTest}>
         <h2 className="font-medium">Test a prompt</h2>
         <textarea
-          className="min-h-24 rounded-md border border-line bg-surface px-3 py-2 text-sm shadow-none"
+          className="field w-full text-sm"
           value={prompt}
           maxLength={500}
           onChange={(event) => setPrompt(event.target.value)}
         />
-        <button className="w-fit rounded-md bg-ink px-4 py-2 text-sm text-pearl disabled:opacity-60" disabled={pending} type="submit">
+        <button className={buttonClass} disabled={pending} type="submit">
           {pending ? "Sending…" : "Send test"}
         </button>
         {result ? (

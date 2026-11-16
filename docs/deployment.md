@@ -12,7 +12,7 @@ The Hobby plan is personal and non-commercial. A product that takes payment need
 
 ## Backend — Render native Python
 
-`render.yaml` defines one free web service. Render installs `backend/requirements.txt` and starts Uvicorn. It does not build `backend/Dockerfile`.
+`render.yaml` defines one free web service. Render installs `backend/requirements-hosted.txt` and starts Uvicorn. It does not build `backend/Dockerfile`. The hosted install omits the local embedding model.
 
 Set these on the Render service:
 
@@ -57,7 +57,7 @@ cd backend
 .\.venv\Scripts\python -m app.workers
 ```
 
-Workflow runs happen inside the manual request. Redis and Celery are not installed. A Render background worker is a paid service, so the blueprint does not create one.
+Workflow runs happen inside the manual request. Support drafts are created in that same kind of request, stay in the conversation until a person approves them, and are not emailed. Hosted support search uses the Knowledge text index. Redis and Celery are not installed. A Render background worker is a paid service, so the blueprint does not create one.
 
 ## Shared development data
 

@@ -158,10 +158,10 @@ export default function KnowledgePage() {
         ))}
       </div>
 
-      <form className="mt-8" onSubmit={onAsk}>
+      <form className="surface-card mt-6 grid gap-3 rounded-lg border border-line p-4" onSubmit={onAsk}>
         <h2 className="text-sm font-medium">Ask about these documents</h2>
         <textarea
-          className={`${fieldClass} mt-3 min-h-24`}
+          className={fieldClass}
           value={question}
           maxLength={1000}
           placeholder={demo ? "What was Northwind Studio's revenue?" : "What does the file say about refunds?"}

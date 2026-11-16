@@ -9,6 +9,22 @@ from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
 from app.models.enums import AuthorType, OutboxStatus, TicketStatus, pg_enum
 
 
+class SupportAssistant(UUIDPrimaryKeyMixin, TimestampMixin, Base):
+    __tablename__ = "support_assistants"
+
+    organization_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    created_by: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("profiles.id"), nullable=False)
+    name: Mapped[str] = mapped_column(String(80), nullable=False)
+    description: Mapped[str | None] = mapped_column(Text)
+    welcome_message: Mapped[str] = mapped_column(Text, nullable=False)
+    instructions: Mapped[str] = mapped_column(Text, nullable=False)
+    tone: Mapped[str] = mapped_column(String(32), nullable=False, default="professional")
+    language: Mapped[str] = mapped_column(String(40), nullable=False, default="English")
+    enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, server_default="true")
+
+
 class SupportTicket(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "support_tickets"
 
@@ -25,6 +41,10 @@ class SupportTicket(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     sentiment: Mapped[str | None] = mapped_column(String(32))
     category: Mapped[str | None] = mapped_column(String(64))
     assigned_to: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("profiles.id"))
+    assistant_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("support_assistants.id", ondelete="SET NULL")
+    )
+    escalated: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default="false")
 
 
 class SupportMessage(UUIDPrimaryKeyMixin, Base):
@@ -41,6 +61,11 @@ class SupportMessage(UUIDPrimaryKeyMixin, Base):
     content: Mapped[str] = mapped_column(Text, nullable=False)
     requires_approval: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default="false")
     approved_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("profiles.id"))
+    draft_status: Mapped[str | None] = mapped_column(String(16))
+    internal: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default="false")
+    provider: Mapped[str | None] = mapped_column(String(40))
+    model: Mapped[str | None] = mapped_column(String(120))
+    suggest_escalation: Mapped[bool | None] = mapped_column(Boolean)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
 

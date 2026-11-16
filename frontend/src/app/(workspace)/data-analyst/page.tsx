@@ -22,7 +22,7 @@ import { ApiError, api, downloadApi } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import type { AnalystDataset, AnalystResult } from "@/lib/types";
 
-const COLORS = ["#4E6574", "#1C1C1A", "#8A9398", "#C5C1B7"];
+const COLORS = ["#242424", "#6E6E6A", "#A7A7A2", "#D4D4CF"];
 
 export default function DataAnalystPage() {
   const { organization, organizationId } = useSession();
@@ -405,17 +405,17 @@ function ChartView({ chart }: { chart: NonNullable<AnalystResult["chart"]> }) {
       <ResponsiveContainer width="100%" height="100%">
         {chart.type === "line" ? (
           <LineChart data={chart.data}>
-            <XAxis dataKey="label" stroke="#5E5E59" fontSize={12} />
-            <YAxis stroke="#5E5E59" fontSize={12} />
+            <XAxis dataKey="label" stroke="#6A6A66" fontSize={12} />
+            <YAxis stroke="#6A6A66" fontSize={12} />
             <Tooltip />
-            <Line dataKey="value" stroke="#4E6574" strokeWidth={2} dot={false} />
+            <Line dataKey="value" stroke="#424242" strokeWidth={2} dot={false} />
           </LineChart>
         ) : chart.type === "area" ? (
           <AreaChart data={chart.data}>
-            <XAxis dataKey="label" stroke="#5E5E59" fontSize={12} />
-            <YAxis stroke="#5E5E59" fontSize={12} />
+            <XAxis dataKey="label" stroke="#6A6A66" fontSize={12} />
+            <YAxis stroke="#6A6A66" fontSize={12} />
             <Tooltip />
-            <Area dataKey="value" stroke="#4E6574" fill="#4E6574" fillOpacity={0.2} />
+            <Area dataKey="value" stroke="#424242" fill="#424242" fillOpacity={0.16} />
           </AreaChart>
         ) : chart.type === "pie" ? (
           <PieChart>
@@ -428,10 +428,10 @@ function ChartView({ chart }: { chart: NonNullable<AnalystResult["chart"]> }) {
           </PieChart>
         ) : (
           <BarChart data={chart.data}>
-            <XAxis dataKey="label" stroke="#5E5E59" fontSize={12} />
-            <YAxis stroke="#5E5E59" fontSize={12} />
+            <XAxis dataKey="label" stroke="#6A6A66" fontSize={12} />
+            <YAxis stroke="#6A6A66" fontSize={12} />
             <Tooltip />
-            <Bar dataKey="value" fill="#4E6574" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="value" fill="#424242" radius={[4, 4, 0, 0]} />
           </BarChart>
         )}
       </ResponsiveContainer>

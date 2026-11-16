@@ -416,9 +416,9 @@ function Builder({ workflowId }: { workflowId: string }) {
             style={{ background: "var(--ivory)" }}
           >
             <Fit marker={`${currentId ?? "new"}:${nodes.length}`} />
-            <MiniMap pannable zoomable nodeColor="#4E6574" maskColor="rgba(245, 244, 240, 0.7)" />
+            <MiniMap pannable zoomable nodeColor="#424242" maskColor="rgba(248, 247, 243, 0.72)" />
             <Controls showInteractive={false} />
-            <Background gap={18} size={1} color="#c5c1b7" />
+            <Background gap={18} size={1} color="#E4E4E7" />
           </ReactFlow>
         </div>
 

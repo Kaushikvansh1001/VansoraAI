@@ -96,14 +96,14 @@ export default function SettingsPage() {
       {message ? <p className="mt-4 text-sm">{message}</p> : null}
       {error ? <p className="mt-4 text-sm text-red-600">{error}</p> : null}
 
-      <form className="mt-6 grid gap-3" onSubmit={createOrganization}>
+      <form className="surface-card mt-6 grid gap-3 rounded-lg border border-line p-4" onSubmit={createOrganization}>
         <h2 className="font-medium">Create</h2>
         <input className={fieldClass} placeholder="Organization name" value={name} onChange={(event) => setName(event.target.value)} minLength={2} required />
         <button className={buttonClass} type="submit">Create organization</button>
       </form>
 
       {organizations.length > 0 ? (
-        <div className="mt-8 grid gap-3">
+        <div className="surface-card mt-4 grid gap-3 rounded-lg border border-line p-4">
           <h2 className="font-medium">Switch</h2>
           <select
             className={fieldClass}
@@ -120,7 +120,7 @@ export default function SettingsPage() {
       ) : null}
 
       {organization?.role === "org_admin" ? (
-        <form className="mt-8 grid gap-3" onSubmit={saveName}>
+        <form className="surface-card mt-4 grid gap-3 rounded-lg border border-line p-4" onSubmit={saveName}>
           <h2 className="font-medium">Rename</h2>
           <input className={fieldClass} value={rename} onChange={(event) => setRename(event.target.value)} minLength={2} required />
           <button className={buttonClass} type="submit">Save name</button>
@@ -142,7 +142,7 @@ export default function SettingsPage() {
             ))}
           </ul>
           {organization.role === "org_admin" ? (
-            <form className="mt-4 grid gap-3 sm:grid-cols-[1fr_140px_auto]" onSubmit={addMember}>
+            <form className="mt-4 grid items-center gap-3 sm:grid-cols-[minmax(0,1fr)_150px_auto]" onSubmit={addMember}>
               <input className={fieldClass} type="email" placeholder="Existing user email" value={email} onChange={(event) => setEmail(event.target.value)} required />
               <select className={fieldClass} value={role} onChange={(event) => setRole(event.target.value as Organization["role"])}>
                 <option value="member">Member</option>

@@ -20,7 +20,7 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      className="rounded-md border border-line px-3 py-1.5 text-sm text-muted"
+      className="btn-secondary px-3 py-1.5 text-sm text-muted"
     >
       {dark ? "Light" : "Dark"}
     </button>

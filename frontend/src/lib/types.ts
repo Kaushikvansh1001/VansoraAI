@@ -260,3 +260,70 @@ export type WorkflowSummary = {
   recent_executions: WorkflowExecution[];
   templates: WorkflowTemplate[];
 };
+
+export type SupportAssistant = {
+  id: string;
+  name: string;
+  description: string | null;
+  welcome_message: string;
+  instructions: string;
+  tone: "professional" | "friendly" | "formal" | "concise";
+  language: string;
+  enabled: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type SupportMessage = {
+  id: string;
+  author_type: "customer" | "agent" | "ai" | "system";
+  author_id: string | null;
+  content: string;
+  internal: boolean;
+  requires_approval: boolean;
+  draft_status: "draft" | "approved" | "rejected" | null;
+  approved_by: string | null;
+  provider: string | null;
+  model: string | null;
+  suggest_escalation: boolean | null;
+  created_at: string;
+};
+
+export type SupportConversation = {
+  id: string;
+  assistant_id: string | null;
+  subject: string;
+  body: string;
+  status: "open" | "pending" | "resolved" | "closed";
+  priority: string | null;
+  assigned_to: string | null;
+  escalated: boolean;
+  created_at: string;
+  updated_at: string;
+  messages: SupportMessage[];
+  draft_error: string | null;
+};
+
+export type SupportCard = {
+  id: string;
+  subject: string;
+  status: SupportConversation["status"];
+  priority: string | null;
+  assigned_to: string | null;
+  escalated: boolean;
+  updated_at: string;
+};
+
+export type SupportSummary = {
+  total: number;
+  open: number;
+  pending: number;
+  resolved: number;
+  closed: number;
+  ai_drafts: number;
+  approved_replies: number;
+  escalated: number;
+  average_response_seconds: number | null;
+  providers: { provider: string; drafts: number }[];
+  recent: { id: string; subject: string; status: string; escalated: boolean; updated_at: string }[];
+};

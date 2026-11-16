@@ -5,7 +5,7 @@ from app.models.base import Base
 from app.models.identity import LocalCredential, Organization, OrganizationMember, Profile
 from app.models.knowledge import Conversation, Document, DocumentChunk, Message
 from app.models.operations import AiFeedback, AiProvider, AiUsageLog, AuditLog, Job
-from app.models.support import OutboxMessage, SupportMessage, SupportTicket
+from app.models.support import OutboxMessage, SupportAssistant, SupportMessage, SupportTicket
 from app.models.workflows import (
     Workflow,
     WorkflowEdge,
@@ -32,6 +32,7 @@ __all__ = [
     "OrganizationMember",
     "OutboxMessage",
     "Profile",
+    "SupportAssistant",
     "SupportMessage",
     "SupportTicket",
     "Workflow",

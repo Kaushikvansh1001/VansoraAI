@@ -37,6 +37,7 @@ class WindowLimiter:
 auth_rate_limiter = WindowLimiter(limit=10, window_seconds=60)
 upload_rate_limiter = WindowLimiter(limit=15, window_seconds=600)
 generation_rate_limiter = WindowLimiter(limit=40, window_seconds=600)
+support_rate_limiter = WindowLimiter(limit=30, window_seconds=600)
 
 
 def hash_password(password: str) -> str:

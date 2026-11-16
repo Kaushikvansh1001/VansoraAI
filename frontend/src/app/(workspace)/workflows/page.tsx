@@ -46,7 +46,7 @@ export default function WorkflowsPage() {
     };
   }, [organizationId]);
 
-  async function useTemplate(templateId: string) {
+  async function createFromTemplate(templateId: string) {
     if (!organizationId) return;
     setCreating(templateId);
     setError(null);
@@ -144,7 +144,7 @@ export default function WorkflowsPage() {
           <article key={template.id} className="surface-card rounded-lg border border-line p-4">
             <h3 className="font-medium">{template.name}</h3>
             <p className="mt-2 text-sm text-muted">{template.description}</p>
-            <button type="button" className={`${buttonClass} mt-4`} onClick={() => useTemplate(template.id)} disabled={creating === template.id}>
+            <button type="button" className={`${buttonClass} mt-4`} onClick={() => createFromTemplate(template.id)} disabled={creating === template.id}>
               {creating === template.id ? "Creating…" : "Use template"}
             </button>
           </article>
